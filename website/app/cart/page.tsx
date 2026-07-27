@@ -1,5 +1,5 @@
 "use client";
-
+import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 
@@ -95,9 +95,11 @@ export default function CartPage() {
               Total: ₹{total}
             </h2>
 
-            <button className="mt-5 w-full bg-pink-600 hover:bg-pink-700 text-white py-4 rounded-xl font-semibold">
-              Proceed to Checkout
-            </button>
+            <Link href="/checkout">
+                <button className="mt-5 w-full bg-pink-600 hover:bg-pink-700 text-white py-4 rounded-xl font-semibold">
+                    Proceed to Checkout
+                </button>
+            </Link>
           </div>
         </>
       )}
