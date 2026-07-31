@@ -62,17 +62,19 @@ export default function WishlistPage() {
               <div className="flex gap-3 mt-5">
 
                 <button
-                  onClick={() =>
-                    addToCart({
-                      ...product,
-                      originalPrice: product.price,
-                      rating: 0,
-                      category: "uncategorized",
-                    })
-                  }
-                  className="flex-1 bg-pink-600 text-white py-2 rounded-lg"
-                >
-                  Add to Cart
+                    onClick={() =>
+                      addToCart({
+                        ...product,
+                        quantity: 1,
+                        stock: 1,
+                        originalPrice: product.price,
+                        rating: 0,
+                        category: "uncategorized",
+                      })
+                    }
+                    className="flex-1 bg-pink-600 text-white py-2 rounded-lg"
+                  >
+                    Add to Cart
                 </button>
 
                 <button

@@ -44,7 +44,11 @@ export default function ProductCard({ product }: ProductCardProps) {
           id: product.id,
           name: product.name,
           price: product.price,
+          originalPrice: product.originalPrice,
+          category: product.category,
           image: product.image,
+          rating: product.rating,
+          stock: product.stock,
         });
       }
     }}

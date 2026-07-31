@@ -21,7 +21,11 @@ export interface WishlistItem {
   id: string;
   name: string;
   price: number;
+  originalPrice: number;
+  category: string;
   image: string;
+  rating: number;
+  stock: number;
 }
 
 interface WishlistContextType {
