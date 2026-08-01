@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Sparkles, Search, SlidersHorizontal } from "lucide-react";
 import ProductCard from "./ProductCard";
 
 import { db } from "@/lib/firebase";
 import { collection, getDocs } from "firebase/firestore";
-
 
 interface Product {
   id: string;
@@ -18,302 +18,187 @@ interface Product {
   stock: number;
 }
 
-
 export default function FeaturedProducts() {
-
-
   const [products, setProducts] = useState<Product[]>([]);
-
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-
   const [loading, setLoading] = useState(true);
 
-
   const [search, setSearch] = useState("");
-
   const [category, setCategory] = useState("All");
-
   const [sort, setSort] = useState("");
 
-
-
   useEffect(() => {
-
-
     const fetchProducts = async () => {
-
       try {
+        const snapshot = await getDocs(collection(db, "products"));
 
-
-        const snapshot = await getDocs(
-          collection(db,"products")
-        );
-
-
-        const productList = snapshot.docs.map(doc => ({
-          id:doc.id,
-          ...doc.data()
+        const productList = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
         })) as Product[];
 
-
         setProducts(productList);
-
         setFilteredProducts(productList);
-
-
-      }
-      catch(error){
-
-        console.error(
-          "Error fetching products:",
-          error
-        );
-
-      }
-      finally{
-
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
         setLoading(false);
-
       }
-
     };
 
-
     fetchProducts();
+  }, []);
 
-
-  },[]);
-
-
-
-
-
-  useEffect(()=>{
-
-
+  useEffect(() => {
     let result = [...products];
 
-
-
-    // Search filter
-
-    if(search){
-
-      result = result.filter(product =>
-        product.name
-        .toLowerCase()
-        .includes(search.toLowerCase())
+    if (search) {
+      result = result.filter((product) =>
+        product.name.toLowerCase().includes(search.toLowerCase())
       );
-
     }
 
-
-
-
-    // Category filter
-
-    if(category !== "All"){
-
-      result = result.filter(product =>
-        product.category === category
+    if (category !== "All") {
+      result = result.filter(
+        (product) => product.category === category
       );
-
     }
 
-
-
-
-    // Price sorting
-
-    if(sort === "low"){
-
-      result.sort(
-        (a,b)=>a.price-b.price
-      );
-
+    if (sort === "low") {
+      result.sort((a, b) => a.price - b.price);
     }
 
-
-    if(sort === "high"){
-
-      result.sort(
-        (a,b)=>b.price-a.price
-      );
-
+    if (sort === "high") {
+      result.sort((a, b) => b.price - a.price);
     }
-
-
 
     setFilteredProducts(result);
+  }, [products, search, category, sort]);
 
-
-
-  },[
-    search,
-    category,
-    sort,
-    products
-  ]);
-
-
-
-
-
-  if(loading){
-
+  if (loading) {
     return (
-
-      <div className="text-center py-10">
-
-        Loading products...
-
-      </div>
-
+      <section className="py-20">
+        <div className="mx-auto max-w-7xl px-6 text-center">
+          <h2 className="text-2xl font-bold">
+            Loading Products...
+          </h2>
+        </div>
+      </section>
     );
-
   }
 
-
-
-
-
-return (
-
-<section className="py-12">
-
-
-<h2 className="text-3xl font-bold mb-6">
-
-Featured Products
-
-</h2>
-
-
-
-{/* Search and Filters */}
-
-<div className="grid md:grid-cols-3 gap-4 mb-8">
-
-
-<input
-
-type="text"
-
-placeholder="Search Beauty & Fashion..."
-
-value={search}
-
-onChange={(e)=>setSearch(e.target.value)}
-
-className="border rounded-lg p-3"
-
-/>
-
-
-
-<select
-
-value={category}
-
-onChange={(e)=>setCategory(e.target.value)}
-
-className="border rounded-lg p-3"
-
->
-
-<option value="All">
-All Categories
-</option>
-
-<option value="Cosmetics">
-Cosmetics
-</option>
-
-<option value="Clothes">
-Clothes
-</option>
-
-<option value="Accessories">
-Accessories
-</option>
-
-</select>
-
-
-
-
-<select
-
-value={sort}
-
-onChange={(e)=>setSort(e.target.value)}
-
-className="border rounded-lg p-3"
-
->
-
-<option value="">
-Sort By Price
-</option>
-
-
-<option value="low">
-Price Low to High
-</option>
-
-
-<option value="high">
-Price High to Low
-</option>
-
-
-</select>
-
-
-
-</div>
-
-
-
-
-
-<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-
-
-{
-filteredProducts.length === 0 ? (
-
-<div className="col-span-full text-center py-10">
-
-No products found
-
-</div>
-
-)
-
-:
-
-filteredProducts.map(product=>(
-
-<ProductCard
-
-key={product.id}
-
-product={product}
-
-/>
-
-))
-
-}
-
-
-</div>
-
-
-</section>
-
-);
-
-
+  return (
+    <section className="bg-pink-50 py-20">
+      <div className="mx-auto max-w-7xl px-6">
+
+        {/* Header */}
+
+        <div className="mb-12 text-center">
+
+          <span className="inline-flex items-center gap-2 rounded-full bg-pink-100 px-5 py-2 text-sm font-semibold text-pink-600">
+            <Sparkles size={16} />
+            New Arrivals
+          </span>
+
+          <h2 className="mt-5 text-4xl font-bold text-gray-900 md:text-5xl">
+            Featured Products
+          </h2>
+
+          <p className="mt-4 text-gray-500">
+            Explore our latest Beauty & Fashion collection.
+          </p>
+
+        </div>
+
+        {/* Filters */}
+
+        <div className="mb-10 rounded-3xl bg-white p-6 shadow-md">
+
+          <div className="grid gap-5 md:grid-cols-3">
+
+            <div className="relative">
+
+              <Search
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                size={18}
+              />
+
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={search}
+                onChange={(e) =>
+                  setSearch(e.target.value)
+                }
+                className="w-full rounded-xl border border-gray-200 py-3 pl-12 pr-4 outline-none focus:border-pink-500"
+              />
+
+            </div>
+
+            <select
+              value={category}
+              onChange={(e) =>
+                setCategory(e.target.value)
+              }
+              className="rounded-xl border border-gray-200 p-3 outline-none focus:border-pink-500"
+            >
+              <option value="All">All Categories</option>
+              <option value="Cosmetics">Cosmetics</option>
+              <option value="Clothes">Clothes</option>
+            </select>
+
+            <div className="relative">
+
+              <SlidersHorizontal
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                size={18}
+              />
+
+              <select
+                value={sort}
+                onChange={(e) =>
+                  setSort(e.target.value)
+                }
+                className="w-full rounded-xl border border-gray-200 py-3 pl-12 pr-4 outline-none focus:border-pink-500"
+              >
+                <option value="">Sort By Price</option>
+                <option value="low">
+                  Price Low to High
+                </option>
+                <option value="high">
+                  Price High to Low
+                </option>
+              </select>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* Products */}
+
+        {filteredProducts.length === 0 ? (
+          <div className="rounded-3xl bg-white py-20 text-center shadow-md">
+            <h3 className="text-2xl font-semibold">
+              No Products Found
+            </h3>
+
+            <p className="mt-2 text-gray-500">
+              Try another search or category.
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {filteredProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  );
 }

@@ -2,9 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-
 import {
-  Search,
   Heart,
   ShoppingCart,
   User,
@@ -12,6 +10,8 @@ import {
   MapPin,
   Settings,
   LogOut,
+  Menu,
+  X,
 } from "lucide-react";
 
 import { signOut } from "firebase/auth";
@@ -20,12 +20,25 @@ import { auth } from "@/lib/firebase";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 
+import TopBar from "./TopBar";
+import Logo from "./Logo";
+import SearchBar from "./SearchBar";
+
 export default function Navbar() {
   const { cart } = useCart();
   const { wishlist } = useWishlist();
 
   const [open, setOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const totalWishlist = wishlist.length;
+
+  const totalItems = cart.reduce(
+    (total, item) => total + item.quantity,
+    0
+  );
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -39,149 +52,156 @@ export default function Navbar() {
 
     document.addEventListener("mousedown", handleClickOutside);
 
-    return () => {
+    return () =>
       document.removeEventListener("mousedown", handleClickOutside);
-    };
   }, []);
 
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      setOpen(false);
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
-
-  const totalWishlist = wishlist.length;
-
-  const totalItems = cart.reduce(
-    (total, item) => total + item.quantity,
-    0
-  );
+  async function handleLogout() {
+    await signOut(auth);
+    setOpen(false);
+  }
 
   return (
-    <nav className="w-full border-b bg-white shadow-sm">
-      <div className="container mx-auto flex h-20 items-center justify-between px-4">
+    <>
+      <TopBar />
 
-        {/* Logo */}
-        <Link href="/">
-          <h1 className="cursor-pointer text-3xl font-bold text-pink-600">
-            Khushika
-          </h1>
-        </Link>
+      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b shadow-sm">
 
-        {/* Search */}
-        <div className="hidden w-[450px] items-center rounded-full border bg-gray-50 px-4 py-2 md:flex">
-          <Search size={18} />
-          <input
-            type="text"
-            placeholder="Search Beauty & Fashion..."
-            className="ml-2 w-full bg-transparent outline-none"
-          />
-        </div>
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4">
 
-        {/* Right Side */}
-        <div className="flex items-center gap-6">
+          <Logo />
 
-          {/* Wishlist */}
-          <Link href="/wishlist">
-            <button className="relative">
-              <Heart className="cursor-pointer transition hover:text-pink-600" />
+          <SearchBar />
 
-              {totalWishlist > 0 && (
-                <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-pink-600 text-xs font-bold text-white">
-                  {totalWishlist}
-                </span>
-              )}
-            </button>
-          </Link>
+          <div className="flex items-center gap-3">
 
-          {/* Cart */}
-          <Link href="/cart">
-            <button className="relative">
-              <ShoppingCart className="cursor-pointer transition hover:text-pink-600" />
+            {/* Wishlist */}
+            <Link href="/wishlist">
+              <div className="relative rounded-full p-3 hover:bg-pink-50 transition">
+                <Heart size={22} />
 
-              {totalItems > 0 && (
-                <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-pink-600 text-xs font-bold text-white">
-                  {totalItems}
-                </span>
-              )}
-            </button>
-          </Link>
-
-          {/* Profile Dropdown */}
-          <div className="relative" ref={dropdownRef}>
-
-            <button onClick={() => setOpen(!open)}>
-              <User className="cursor-pointer transition hover:text-pink-600" />
-            </button>
-
-            {open && (
-              <div className="absolute right-0 z-50 mt-3 w-64 rounded-xl border bg-white shadow-xl">
-
-                <Link
-                  href="/profile"
-                  onClick={() => setOpen(false)}
-                  className="flex items-center gap-3 px-5 py-3 hover:bg-pink-50"
-                >
-                  <User size={18} />
-                  My Profile
-                </Link>
-
-                <Link
-                  href="/orders"
-                  onClick={() => setOpen(false)}
-                  className="flex items-center gap-3 px-5 py-3 hover:bg-pink-50"
-                >
-                  <Package size={18} />
-                  My Orders
-                </Link>
-
-                <Link
-                  href="/wishlist"
-                  onClick={() => setOpen(false)}
-                  className="flex items-center gap-3 px-5 py-3 hover:bg-pink-50"
-                >
-                  <Heart size={18} />
-                  Wishlist
-                </Link>
-
-                <Link
-                  href="/addresses"
-                  onClick={() => setOpen(false)}
-                  className="flex items-center gap-3 px-5 py-3 hover:bg-pink-50"
-                >
-                  <MapPin size={18} />
-                  Addresses
-                </Link>
-
-                <Link
-                  href="/settings"
-                  onClick={() => setOpen(false)}
-                  className="flex items-center gap-3 px-5 py-3 hover:bg-pink-50"
-                >
-                  <Settings size={18} />
-                  Settings
-                </Link>
-
-                <hr />
-
-                <button
-                  onClick={handleLogout}
-                  className="flex w-full items-center gap-3 px-5 py-3 text-red-600 hover:bg-red-50"
-                >
-                  <LogOut size={18} />
-                  Logout
-                </button>
-
+                {totalWishlist > 0 && (
+                  <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-pink-600 text-white text-xs flex items-center justify-center">
+                    {totalWishlist}
+                  </span>
+                )}
               </div>
-            )}
+            </Link>
+
+            {/* Cart */}
+            <Link href="/cart">
+              <div className="relative rounded-full p-3 hover:bg-pink-50 transition">
+                <ShoppingCart size={22} />
+
+                {totalItems > 0 && (
+                  <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-pink-600 text-white text-xs flex items-center justify-center">
+                    {totalItems}
+                  </span>
+                )}
+              </div>
+            </Link>
+
+            {/* Profile */}
+            <div className="relative" ref={dropdownRef}>
+
+              <button
+                onClick={() => setOpen(!open)}
+                className="rounded-full p-3 hover:bg-pink-50 transition"
+              >
+                <User size={22} />
+              </button>
+
+              {open && (
+                <div className="absolute right-0 mt-4 w-64 rounded-2xl border bg-white shadow-xl overflow-hidden">
+
+                  <div className="border-b bg-pink-50 p-5">
+
+                    <div className="h-14 w-14 rounded-full bg-pink-600 flex items-center justify-center text-white text-xl font-bold">
+                      K
+                    </div>
+
+                    <h3 className="mt-3 font-semibold">
+                      Welcome
+                    </h3>
+
+                    <p className="text-sm text-gray-500">
+                      Manage your account
+                    </p>
+
+                  </div>
+
+                  <Link href="/profile" className="flex items-center gap-3 px-5 py-3 hover:bg-pink-50">
+                    <User size={18}/> Profile
+                  </Link>
+
+                  <Link href="/orders" className="flex items-center gap-3 px-5 py-3 hover:bg-pink-50">
+                    <Package size={18}/> Orders
+                  </Link>
+
+                  <Link href="/wishlist" className="flex items-center gap-3 px-5 py-3 hover:bg-pink-50">
+                    <Heart size={18}/> Wishlist
+                  </Link>
+
+                  <Link href="/addresses" className="flex items-center gap-3 px-5 py-3 hover:bg-pink-50">
+                    <MapPin size={18}/> Addresses
+                  </Link>
+
+                  <Link href="/settings" className="flex items-center gap-3 px-5 py-3 hover:bg-pink-50">
+                    <Settings size={18}/> Settings
+                  </Link>
+
+                  <button
+                    onClick={handleLogout}
+                    className="flex w-full items-center gap-3 px-5 py-3 text-red-600 hover:bg-red-50"
+                  >
+                    <LogOut size={18}/> Logout
+                  </button>
+
+                </div>
+              )}
+
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="lg:hidden rounded-full p-2 hover:bg-pink-50"
+              onClick={() => setMobileOpen(!mobileOpen)}
+            >
+              {mobileOpen ? <X /> : <Menu />}
+            </button>
 
           </div>
 
         </div>
-      </div>
-    </nav>
+
+        {/* Navigation */}
+        <nav className="hidden lg:block border-t bg-white">
+          <div className="mx-auto flex max-w-7xl gap-10 px-5 py-4 font-medium">
+
+            <Link href="/" className="hover:text-pink-600">
+              Home
+            </Link>
+
+            <Link href="/category/cosmetics" className="hover:text-pink-600">
+              Cosmetics
+            </Link>
+
+            <Link href="/category/clothes" className="hover:text-pink-600">
+              Clothes
+            </Link>
+
+            <Link href="/offers" className="hover:text-pink-600">
+              Offers
+            </Link>
+
+            <Link href="/contact" className="hover:text-pink-600">
+              Contact
+            </Link>
+
+          </div>
+        </nav>
+
+      </header>
+    </>
   );
 }

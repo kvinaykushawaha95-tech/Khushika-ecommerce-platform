@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { ShoppingCart, Heart } from "lucide-react";
+
 import { Product } from "@/types/product";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
@@ -13,88 +15,135 @@ type ProductCardProps = {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
+
   const {
-  addToWishlist,
-  removeFromWishlist,
-  isInWishlist,
-} = useWishlist();
+    addToWishlist,
+    removeFromWishlist,
+    isInWishlist,
+  } = useWishlist();
+
+  const discount =
+    product.originalPrice && product.originalPrice > product.price
+      ? Math.round(
+          ((product.originalPrice - product.price) /
+            product.originalPrice) *
+            100
+        )
+      : 0;
 
   return (
-    <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition duration-300 overflow-hidden">
+    <div className="group overflow-hidden rounded-3xl bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
 
-      {/* Clickable Image */}
-      <div className="relative">
+      {/* Image */}
 
-  <Link href={`/product/${product.id}`}>
-  <Image
-    src={product.image || "/products/no-image.png"}
-    alt={product.name}
-    width={300}
-    height={300}
-  className="w-full h-64 object-cover cursor-pointer"
-  />
-  </Link>
+      <div className="relative overflow-hidden">
 
-  <button
-    onClick={() => {
-      if (isInWishlist(product.id)) {
-        removeFromWishlist(product.id);
-      } else {
-        addToWishlist({
-          id: product.id,
-          name: product.name,
-          price: product.price,
-          originalPrice: product.originalPrice,
-          category: product.category,
-          image: product.image,
-          rating: product.rating,
-          stock: product.stock,
-        });
-      }
-    }}
-    className="absolute top-3 right-3 bg-white rounded-full p-2 shadow-lg hover:scale-110 transition"
-  >
-    {isInWishlist(product.id) ? "❤️" : "🤍"}
-  </button>
+        {discount > 0 && (
+          <span className="absolute left-4 top-4 z-20 rounded-full bg-red-500 px-3 py-1 text-xs font-bold text-white">
+            -{discount}%
+          </span>
+        )}
 
-</div>
+        <button
+          onClick={() => {
+            if (isInWishlist(product.id)) {
+              removeFromWishlist(product.id);
+            } else {
+              addToWishlist({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                originalPrice: product.originalPrice,
+                category: product.category,
+                image: product.image,
+                rating: product.rating,
+                stock: product.stock,
+              });
+            }
+          }}
+          className="absolute right-4 top-4 z-20 rounded-full bg-white p-2 shadow-lg transition hover:scale-110"
+        >
+          <Heart
+            size={20}
+            className={
+              isInWishlist(product.id)
+                ? "fill-pink-600 text-pink-600"
+                : "text-gray-500"
+            }
+          />
+        </button>
 
-      <div className="p-4">
-
-        {/* Clickable Product Name */}
         <Link href={`/product/${product.id}`}>
-          <h3 className="text-lg font-semibold hover:text-pink-600 cursor-pointer">
+          <Image
+            src={product.image || "/logo/logo.png"}
+            alt={product.name}
+            width={500}
+            height={500}
+            className="h-72 w-full object-cover transition duration-500 group-hover:scale-110"
+          />
+        </Link>
+
+      </div>
+
+      {/* Content */}
+
+      <div className="p-5">
+
+        <Link href={`/product/${product.id}`}>
+          <h3 className="line-clamp-2 text-xl font-semibold text-gray-900 transition hover:text-pink-600">
             {product.name}
           </h3>
         </Link>
 
-       
-        {/* Live Rating */}
+        <div className="mt-2">
+          <ProductRating productId={String(product.id)} />
+        </div>
 
-        <ProductRating
-          productId={String(product.id)}
-        />
+        <div className="mt-4 flex items-end gap-2">
 
-        {/* Price */}
-        <div className="flex items-center gap-2 mt-3">
-          <span className="text-pink-600 text-xl font-bold">
+          <span className="text-2xl font-bold text-pink-600">
             ₹{product.price}
           </span>
 
-          <span className="line-through text-gray-400">
-            ₹{product.originalPrice}
-          </span>
-        </div>
+          {product.originalPrice > product.price && (
+            <span className="text-gray-400 line-through">
+              ₹{product.originalPrice}
+            </span>
+          )}
 
-        {/* Add to Cart */}
+        </div>
+        <div className="mt-4 flex items-center justify-between text-sm">
+  {product.stock > 0 ? (
+    <span className="rounded-full bg-green-100 px-3 py-1 font-medium text-green-700">
+      ✓ In Stock
+    </span>
+  ) : (
+    <span className="rounded-full bg-red-100 px-3 py-1 font-medium text-red-600">
+      Out of Stock
+    </span>
+  )}
+</div>
+
         <button
-          onClick={() => addToCart({ ...product, quantity: 1 })}
-          className="w-full mt-4 bg-pink-600 text-white py-2 rounded-lg hover:bg-pink-700 transition"
+          disabled={product.stock <= 0}
+          onClick={() =>
+            addToCart({
+              ...product,
+              quantity: 1,
+            })
+          }
+          className={`mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-3 font-semibold text-white transition ${
+            product.stock > 0
+              ? "bg-pink-600 hover:bg-pink-700"
+              : "cursor-not-allowed bg-gray-400"
+          }`}
         >
-          Add to Cart
-        </button>
+          <ShoppingCart size={20} />
+          {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
+      </button>
 
       </div>
+
     </div>
   );
 }
