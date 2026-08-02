@@ -6,12 +6,14 @@ import { db } from "@/lib/firebase";
 
 import ProductDetails from "@/components/ProductDetails";
 import ProductReviews from "@/components/ProductReviews";
+import RelatedProducts from "@/components/Product/RelatedProducts";
 
 interface Props {
   params: Promise<{
     id: string;
   }>;
 }
+
 
 export default async function ProductPage({ params }: Props) {
   const { id } = await params;
@@ -63,9 +65,17 @@ export default async function ProductPage({ params }: Props) {
           Premium quality beauty product designed for everyday use.
         </p>
       </div>
-      <ProductReviews 
-       productId={id}
-       />
+      
+       <ProductReviews productId={id} />
+
+        <RelatedProducts
+          currentProductId={id}
+          category={(product as any).category}
+        />
+       
     </div>
+    
+    
   );
+  
 }

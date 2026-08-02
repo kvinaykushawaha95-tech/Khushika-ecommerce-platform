@@ -14,6 +14,7 @@ import {
 
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
+import { toast } from "react-hot-toast/headless";
 
 
 export default function ProductReviews({
@@ -82,7 +83,7 @@ const submitReview=async()=>{
 
 if(!user){
 
-alert("Please login first");
+toast.error("Please login first");
 
 return;
 
@@ -91,7 +92,7 @@ return;
 
 if(!comment){
 
-alert("Write a review");
+toast.error("Write a review");
 
 return;
 
@@ -121,7 +122,7 @@ createdAt:serverTimestamp()
 
 setComment("");
 
-alert("Review added");
+toast.success("Review added");
 
 
 };

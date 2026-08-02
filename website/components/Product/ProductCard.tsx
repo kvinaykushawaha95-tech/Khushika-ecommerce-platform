@@ -7,6 +7,7 @@ import { ShoppingCart, Heart } from "lucide-react";
 import { Product } from "@/types/product";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
+
 import ProductRating from "@/components/ProductRating";
 
 type ProductCardProps = {

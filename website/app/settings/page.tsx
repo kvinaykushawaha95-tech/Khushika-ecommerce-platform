@@ -12,6 +12,7 @@ import {
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast/headless";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -25,7 +26,7 @@ export default function SettingsPage() {
       router.push("/login");
     } catch (error) {
       console.error(error);
-      alert("Logout failed");
+      toast.error("Logout failed");
     }
   };
 

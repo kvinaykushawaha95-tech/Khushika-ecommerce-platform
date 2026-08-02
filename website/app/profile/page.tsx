@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
+import { toast } from "react-hot-toast/headless";
 
 interface UserProfile {
   name: string;
@@ -88,10 +89,10 @@ export default function ProfilePage() {
 
       setEditing(false);
 
-      alert("✅ Profile Updated Successfully");
+      toast.success("✅ Profile Updated Successfully");
     } catch (error) {
       console.error(error);
-      alert("❌ Failed to update profile");
+      toast.error("❌ Failed to update profile");
     }
 
     setSaving(false);

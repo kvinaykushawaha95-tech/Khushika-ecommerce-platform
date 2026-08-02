@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast/headless";
 
 
 export default function LoginPage(){
@@ -21,14 +22,14 @@ try{
 
 await login(email,password);
 
-alert("Login successful");
+toast.success("Login successful");
 
 router.push("/profile");
 
 
 }catch(error:any){
 
-alert(error.message);
+toast.error(error.message);
 
 }
 

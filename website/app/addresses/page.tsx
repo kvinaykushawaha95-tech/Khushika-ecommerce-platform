@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { MapPin, Plus, Pencil, Trash2, Home } from "lucide-react";
+import ConfirmModal from "@/components/ui/ConfirmModal";
 
 interface Address {
   id: number;
@@ -26,11 +27,23 @@ export default function AddressesPage() {
     },
   ]);
 
-  const handleDelete = (id: number) => {
-    if (confirm("Are you sure you want to delete this address?")) {
-      setAddresses(addresses.filter((item) => item.id !== id));
-    }
-  };
+const [deleteId, setDeleteId] = useState<number | null>(null);
+
+const handleDelete = (id: number) => {
+  setDeleteId(id);
+};
+
+
+const confirmDelete = () => {
+  if (deleteId !== null) {
+    setAddresses(addresses.filter((item) => item.id !== deleteId));
+    setDeleteId(null);
+  }
+};
+
+const cancelDelete = () => {
+  setDeleteId(null);
+};
 
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4">
@@ -124,7 +137,16 @@ export default function AddressesPage() {
           )}
         </div>
 
-      </div>
+            </div>
+
+          <ConfirmModal
+            open={deleteId !== null}
+            title="Delete Address"
+            message="Are you sure you want to delete this address?"
+            onConfirm={confirmDelete}
+            onCancel={cancelDelete}
+          />
+
     </div>
   );
 }

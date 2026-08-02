@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import toast from "react-hot-toast";
 
 import {
   collection,
@@ -64,10 +65,10 @@ export default function AdminProductsPage() {
         prev.filter((product) => product.id !== id)
       );
 
-      alert("✅ Product Deleted");
+      toast.success("✅ Product Deleted");
     } catch (error) {
       console.error(error);
-      alert("❌ Failed to delete product");
+      toast.error("❌ Failed to delete product");
     }
   }
 

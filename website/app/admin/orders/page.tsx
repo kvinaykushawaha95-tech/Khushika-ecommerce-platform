@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
+import toast from "react-hot-toast";
 
 import {
   collection,
@@ -143,9 +144,7 @@ export default function AdminOrdersPage() {
 
       console.error(error);
 
-      alert(
-        "Failed to update status"
-      );
+      toast.error("Failed to update status");
 
     }
 

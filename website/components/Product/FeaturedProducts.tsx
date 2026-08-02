@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Sparkles, Search, SlidersHorizontal } from "lucide-react";
 import ProductCard from "./ProductCard";
-
+import ProductSkeleton from "./ProductSkeleton";
 import { db } from "@/lib/firebase";
 import { collection, getDocs } from "firebase/firestore";
 
@@ -19,6 +19,7 @@ interface Product {
 }
 
 export default function FeaturedProducts() {
+
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -28,26 +29,25 @@ export default function FeaturedProducts() {
   const [sort, setSort] = useState("");
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const snapshot = await getDocs(collection(db, "products"));
+  const fetchProducts = async () => {
+    try {
+      const snapshot = await getDocs(collection(db, "products"));
 
-        const productList = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Product[];
+      const productList = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Product[];
 
-        setProducts(productList);
-        setFilteredProducts(productList);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      setProducts(productList);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchProducts();
-  }, []);
+  fetchProducts();
+}, []);
 
   useEffect(() => {
     let result = [...products];
@@ -75,18 +75,7 @@ export default function FeaturedProducts() {
     setFilteredProducts(result);
   }, [products, search, category, sort]);
 
-  if (loading) {
-    return (
-      <section className="py-20">
-        <div className="mx-auto max-w-7xl px-6 text-center">
-          <h2 className="text-2xl font-bold">
-            Loading Products...
-          </h2>
-        </div>
-      </section>
-    );
-  }
-
+  
   return (
     <section className="bg-pink-50 py-20">
       <div className="mx-auto max-w-7xl px-6">
@@ -178,7 +167,13 @@ export default function FeaturedProducts() {
 
         {/* Products */}
 
-        {filteredProducts.length === 0 ? (
+        {loading ? (
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <ProductSkeleton key={index} />
+            ))}
+          </div>
+        ) : filteredProducts.length === 0 ? (
           <div className="rounded-3xl bg-white py-20 text-center shadow-md">
             <h3 className="text-2xl font-semibold">
               No Products Found

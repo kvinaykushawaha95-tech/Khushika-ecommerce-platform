@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { Product } from "@/types/product";
 import { useCart } from "@/context/CartContext";
+import toast from "react-hot-toast";
 
 
 interface Props {
@@ -15,6 +16,9 @@ export default function ProductDetails({ product }: Props) {
   const { addToCart } = useCart();
 
   const [quantity, setQuantity] = useState(1);
+  const [selectedImage, setSelectedImage] = useState(
+  product.images?.[0] || product.image
+);
 
 
   const discount = Math.round(
@@ -26,12 +30,12 @@ export default function ProductDetails({ product }: Props) {
 
   function handleAddToCart() {
   if (product.stock === 0) {
-    alert("This product is out of stock.");
+    toast.error("This product is out of stock.");
     return;
   }
 
   if (quantity > product.stock) {
-    alert(`Only ${product.stock} item(s) available.`);
+    toast.error(`Only ${product.stock} item(s) available.`);
     return;
   }
 
@@ -40,7 +44,7 @@ export default function ProductDetails({ product }: Props) {
     quantity,
   });
 
-  alert("✅ Added To Cart");
+  toast.success("Added to cart successfully!");
 }
 
 
@@ -49,24 +53,59 @@ export default function ProductDetails({ product }: Props) {
     <div className="grid lg:grid-cols-2 gap-12">
 
 
-      {/* Image */}
+{/* Product Gallery */}
 
-      <div>
+<div>
 
-        <div className="sticky top-24 rounded-3xl border border-gray-100 bg-white p-8 shadow-xl">
+  <div className="sticky top-24">
+
+    <div className="rounded-3xl border border-gray-100 bg-white p-8 shadow-xl">
+
+      <Image
+        src={selectedImage}
+        alt={product.name}
+        width={700}
+        height={700}
+        className="h-[550px] w-full object-contain transition duration-500 hover:scale-110"
+      />
+
+    </div>
+
+
+    {/* Thumbnails */}
+
+    <div className="mt-5 flex gap-4 overflow-x-auto">
+
+      {(product.images || [product.image]).map(
+        (img, index) => (
+
+        <div
+          key={index}
+          onClick={() => setSelectedImage(img)}
+          className={`cursor-pointer rounded-xl border p-2 transition ${
+            selectedImage === img
+              ? "border-pink-600 shadow-md"
+              : "border-gray-200"
+          }`}
+        >
 
           <Image
-          src={product.image}
-          alt={product.name}
-          width={700}
-          height={700}
-          className="h-[550px] w-full object-contain transition-transform duration-500 hover:scale-105"
-        />
+            src={img}
+            alt={product.name}
+            width={80}
+            height={80}
+            className="h-20 w-20 rounded-lg object-cover"
+          />
 
         </div>
 
+      ))}
 
-      </div>
+    </div>
+
+  </div>
+
+</div>
 
 
 

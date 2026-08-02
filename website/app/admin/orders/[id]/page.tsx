@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
 import { db } from "@/lib/firebase";
+import toast from "react-hot-toast";
 
 import {
   doc,
@@ -70,11 +71,11 @@ export default function AdminOrderDetailsPage() {
         status,
       });
 
-      alert("Order status updated successfully.");
+      toast.success("Order status updated successfully.");
 
     } catch (error) {
       console.error(error);
-      alert("Failed to update status.");
+      toast.error("Failed to update status.");
     }
   };
 

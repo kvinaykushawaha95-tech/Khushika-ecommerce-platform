@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 import {
   doc,
@@ -132,7 +133,7 @@ export default function EditProductPage() {
       );
 
 
-      alert("✅ Product Updated");
+      toast.success("✅ Product Updated");
 
 
       router.push("/admin/products");
@@ -143,7 +144,7 @@ export default function EditProductPage() {
 
       console.error(error);
 
-      alert("❌ Update Failed");
+      toast.error("❌ Update Failed");
 
 
     }

@@ -8,11 +8,14 @@ import Features from "@/components/Common/Features";
 import Testimonials from "@/components/Common/Testimonials";
 import Newsletter from "@/components/Common/Newsletter";
 import FadeIn from "@/components/Common/FadeIn";
+import HeroSlider from "@/components/HeroSlider";
+
 
 export default function Home() {
   return (
     <>
       <Navbar />
+      <HeroSlider />
       <FadeIn>
         <Hero />
       </FadeIn>

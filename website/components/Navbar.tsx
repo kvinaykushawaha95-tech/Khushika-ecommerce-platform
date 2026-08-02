@@ -1,8 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu, X, Search, Heart, ShoppingCart, User } from "lucide-react";
+import Image from "next/image";
+
+import { db } from "@/lib/firebase";
+import { collection, getDocs } from "firebase/firestore";
 
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
@@ -10,9 +14,36 @@ import { useWishlist } from "@/context/WishlistContext";
 export default function Navbar() {
 
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [products, setProducts] = useState<any[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const { cart } = useCart();
   const { wishlist } = useWishlist();
+
+  useEffect(() => {
+  const fetchProducts = async () => {
+    const snapshot = await getDocs(
+      collection(db, "products")
+    );
+
+    const data = snapshot.docs.map((doc) => ({
+  ...doc.data(),
+  id: doc.id,
+}));
+
+    console.log("Navbar products:", data);
+
+    setProducts(data);
+  };
+
+  fetchProducts();
+}, []);
+const suggestions = products.filter((product)=> 
+  product.name
+    .toLowerCase()
+    .includes(search.toLowerCase())
+).slice(0,5);
 
 
   return (
@@ -41,8 +72,8 @@ export default function Navbar() {
             Home
           </Link>
 
-          <Link 
-            href="/products"
+          <Link
+            href="/shop"
             className="hover:text-pink-600 transition"
           >
             Shop
@@ -67,14 +98,70 @@ export default function Navbar() {
 
 
         {/* Search */}
-        <div className="hidden lg:flex items-center bg-gray-100 rounded-full px-4 py-2 w-72">
+        <div className="relative hidden lg:block">
 
-          <Search size={18} className="text-gray-500"/>
+          <div className="flex items-center bg-gray-100 rounded-full px-4 py-2 w-72">
 
-          <input
-            placeholder="Search Beauty & Fashion..."
-            className="bg-transparent outline-none px-3 text-sm w-full"
-          />
+            <Search size={18} className="text-gray-500"/>
+
+            <input
+              value={search}
+              onFocus={()=>setShowSuggestions(true)}
+              onChange={(e)=>{
+                setSearch(e.target.value);
+                setShowSuggestions(true);
+              }}
+              placeholder="Search Beauty & Fashion..."
+              className="bg-transparent outline-none px-3 text-sm w-full"
+            />
+
+          </div>
+
+
+          {showSuggestions && search && suggestions.length > 0 && (
+
+            <div className="absolute top-14 left-0 w-80 rounded-2xl bg-white shadow-xl border overflow-hidden">
+
+              {suggestions.map((product)=>(
+
+                <Link
+                  key={product.id}
+                  href={`/product/${product.id}`}
+                  onClick={()=>{
+                    setSearch("");
+                    setShowSuggestions(false);
+                  }}
+                  className="flex items-center gap-3 p-3 hover:bg-pink-50"
+                >
+
+                  <Image
+                    src={product.image || "/logo/logo.png"}
+                    alt={product.name}
+                    width={45}
+                    height={45}
+                    className="rounded-lg object-cover"
+                  />
+
+                  <div>
+
+                    <p className="font-semibold text-sm">
+                      {product.name}
+                    </p>
+
+                    <p className="text-pink-600 text-sm">
+                      ₹{product.price}
+                    </p>
+
+                  </div>
+
+
+                </Link>
+
+              ))}
+
+            </div>
+
+          )}
 
         </div>
 

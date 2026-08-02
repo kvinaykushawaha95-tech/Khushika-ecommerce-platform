@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc } from "firebase/firestore";
+import toast from "react-hot-toast";
 
 export default function AddProductPage() {
   const [name, setName] = useState("");
@@ -25,7 +26,7 @@ export default function AddProductPage() {
       createdAt: new Date(),
     });
 
-    alert("Product added successfully!");
+    toast.success("Product added successfully!");
 
     setName("");
     setPrice("");
@@ -36,7 +37,7 @@ export default function AddProductPage() {
     setStock("0");
   } catch (error) {
     console.error("Error:", error);
-    alert("Failed to save product.");
+    toast.error("Failed to save product.");
   }
 };
 

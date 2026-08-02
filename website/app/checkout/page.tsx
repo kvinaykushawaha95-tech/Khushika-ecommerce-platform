@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
-
+import toast from "react-hot-toast";
 import { db } from "@/lib/firebase";
 import {
   collection,
@@ -50,7 +50,7 @@ export default function CheckoutPage() {
 
   const applyCoupon = async () => {
     if (!couponCode) {
-      alert("Enter coupon code.");
+      toast.error("Enter coupon code.");
       return;
     }
 
@@ -64,20 +64,20 @@ export default function CheckoutPage() {
       const snapshot = await getDocs(q);
 
       if (snapshot.empty) {
-        alert("Invalid coupon.");
+        toast.error("Invalid coupon.");
         return;
       }
 
       const coupon = snapshot.docs[0].data();
 
       if (subtotal < coupon.minimumOrder) {
-        alert(`Minimum order should be ₹${coupon.minimumOrder}`);
+        toast.error(`Minimum order should be ₹${coupon.minimumOrder}`);
         return;
       }
 
       setDiscount(coupon.discount);
 
-      alert("Coupon Applied Successfully!");
+      toast.success("Coupon Applied Successfully!");
     } catch (error) {
       console.error(error);
     }
@@ -85,17 +85,17 @@ export default function CheckoutPage() {
 
   const validateFields = () => {
     if (!user) {
-      alert("Please login first.");
+      toast.error("Please login first.");
       return false;
     }
 
     if (!fullName || !email || !phone || !address || !city || !pincode) {
-      alert("Please fill all fields.");
+      toast.error("Please fill all fields.");
       return false;
     }
 
     if (cart.length === 0) {
-      alert("Your cart is empty.");
+      toast.error("Your cart is empty.");
       return false;
     }
 
@@ -116,7 +116,7 @@ export default function CheckoutPage() {
         const productSnap = await getDoc(productRef);
 
         if (!productSnap.exists()) {
-          alert(`${item.name} not found.`);
+          toast.error(`${item.name} not found.`);
           setLoading(false);
           return;
         }
@@ -124,7 +124,7 @@ export default function CheckoutPage() {
         const product = productSnap.data();
 
         if ((product.stock || 0) < item.quantity) {
-          alert(`Only ${product.stock} item(s) of ${item.name} are available.`);
+          toast.error(`Only ${product.stock} item(s) of ${item.name} are available.`);
           setLoading(false);
           return;
         }
@@ -175,7 +175,7 @@ export default function CheckoutPage() {
       router.push("/order-success");
     } catch (error) {
       console.error(error);
-      alert("Failed to place order.");
+      toast.error("Failed to place order.");
     }
 
     setLoading(false);
@@ -187,7 +187,7 @@ export default function CheckoutPage() {
     setPaymentLoading(true);
 
     if (!user) {
-      alert("Please login first.");
+      toast.error("Please login first.");
       setPaymentLoading(false);
       return;
     }
@@ -208,7 +208,7 @@ export default function CheckoutPage() {
       const data = await response.json();
 
       if (!data.success) {
-        alert("Payment order creation failed");
+        toast.error("Payment order creation failed");
         setPaymentLoading(false);
         return;
       }
@@ -290,7 +290,7 @@ export default function CheckoutPage() {
       razorpay.open();
     } catch (error) {
       console.error(error);
-      alert("Payment failed");
+      toast.error("Payment failed");
     }
 
     setPaymentLoading(false);

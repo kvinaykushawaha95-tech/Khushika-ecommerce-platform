@@ -4,6 +4,7 @@ import { db } from "@/lib/firebase";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast/headless";
 
 export default function RegisterPage() {
 
@@ -26,11 +27,11 @@ const handleRegister = async () => {
       createdAt: serverTimestamp(),
     });
 
-    alert("Account created successfully!");
+    toast.success("Account created successfully!");
 
     router.push("/profile");
   } catch (error: any) {
-    alert(error.message);
+    toast.error(error.message);
   }
 };
 

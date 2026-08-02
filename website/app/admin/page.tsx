@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 
 import { db } from "@/lib/firebase";
+import toast from "react-hot-toast";
 
 import {
   collection,
@@ -85,7 +86,7 @@ export default function ProductsPage() {
       );
 
 
-      alert("Product deleted");
+      toast.success("Product deleted successfully!");
 
       fetchProducts();
 
