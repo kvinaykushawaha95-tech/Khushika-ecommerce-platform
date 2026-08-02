@@ -53,15 +53,15 @@ export default function ProductDetails({ product }: Props) {
 
       <div>
 
-        <div className="bg-white rounded-3xl shadow-lg p-8">
+        <div className="sticky top-24 rounded-3xl border border-gray-100 bg-white p-8 shadow-xl">
 
           <Image
-            src={product.image}
-            alt={product.name}
-            width={600}
-            height={600}
-            className="w-full h-[500px] object-contain"
-          />
+          src={product.image}
+          alt={product.name}
+          width={700}
+          height={700}
+          className="h-[550px] w-full object-contain transition-transform duration-500 hover:scale-105"
+        />
 
         </div>
 
@@ -75,22 +75,20 @@ export default function ProductDetails({ product }: Props) {
       <div>
 
 
-        <h1 className="text-4xl font-bold">
+        <h1 className="text-3xl md:text-5xl font-extrabold leading-tight text-gray-900">
           {product.name}
         </h1>
 
 
 
-        <div className="flex items-center gap-2 mt-4">
+        <div className="mt-5 flex items-center gap-3">
+          <div className="rounded-full bg-yellow-100 px-3 py-1 font-semibold text-yellow-700">
+            ⭐ {product.rating}
+          </div>
 
-          <span className="text-yellow-500 text-xl">
-            ⭐⭐⭐⭐⭐
+          <span className="text-gray-500">
+            Trusted by customers
           </span>
-
-          <span>
-            ({product.rating} Ratings)
-          </span>
-
         </div>
 
 
@@ -163,7 +161,7 @@ export default function ProductDetails({ product }: Props) {
                   prev > 1 ? prev - 1 : 1
                 )
               }
-              className="w-10 h-10 rounded-full bg-gray-200"
+              className="flex h-11 w-11 items-center justify-center rounded-full border bg-white text-xl shadow hover:bg-pink-50"
             >
               -
             </button>
@@ -203,22 +201,47 @@ export default function ProductDetails({ product }: Props) {
           <button
               onClick={handleAddToCart}
               disabled={product.stock === 0}
-              className={`flex-1 py-4 rounded-xl font-semibold text-white ${
-                product.stock === 0
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-pink-600 hover:bg-pink-700"
-              }`}
-            >
+              className={`flex-1 rounded-2xl py-4 text-lg font-semibold text-white transition-all duration-300 ${
+                  product.stock === 0
+                    ? "cursor-not-allowed bg-gray-400"
+                    : "bg-pink-600 hover:-translate-y-1 hover:bg-pink-700 hover:shadow-xl"
+                }`}
+                            >
               {product.stock === 0 ? "Out of Stock" : "Add To Cart"}
           </button>
 
 
 
           <button
-            className="flex-1 bg-black hover:bg-gray-800 text-white py-4 rounded-xl font-semibold"
+            className="flex-1 rounded-2xl bg-black py-4 text-lg font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:bg-gray-800 hover:shadow-xl"
           >
             Buy Now
+
           </button>
+          <div className="mt-10 grid grid-cols-3 gap-4">
+
+            <div className="rounded-2xl border p-4 text-center">
+              <div className="text-2xl">🚚</div>
+              <p className="mt-2 text-sm font-medium">
+                Free Shipping
+              </p>
+            </div>
+
+            <div className="rounded-2xl border p-4 text-center">
+              <div className="text-2xl">🔒</div>
+              <p className="mt-2 text-sm font-medium">
+                Secure Payment
+              </p>
+            </div>
+
+            <div className="rounded-2xl border p-4 text-center">
+              <div className="text-2xl">↩️</div>
+              <p className="mt-2 text-sm font-medium">
+                Easy Returns
+              </p>
+            </div>
+
+          </div>
 
 
         </div>

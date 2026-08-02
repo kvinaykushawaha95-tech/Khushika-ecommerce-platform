@@ -31,11 +31,18 @@ export default function ProductCard({ product }: ProductCardProps) {
         )
       : 0;
 
+  // --- Helper & Variable defined ABOVE the return statement ---
+  const isValidUrl = (url?: string) => {
+    if (!url || typeof url !== "string" || url.trim() === "") return false;
+    return url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/");
+  };
+
+  const imageSrc = isValidUrl(product?.image) ? product.image! : "/logo/logo.png";
+
   return (
     <div className="group overflow-hidden rounded-3xl bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
 
       {/* Image */}
-
       <div className="relative overflow-hidden">
 
         {discount > 0 && (
@@ -75,8 +82,8 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         <Link href={`/product/${product.id}`}>
           <Image
-            src={product.image || "/logo/logo.png"}
-            alt={product.name}
+            src={imageSrc}
+            alt={product.name || "Product image"}
             width={500}
             height={500}
             className="h-72 w-full object-cover transition duration-500 group-hover:scale-110"
@@ -86,7 +93,6 @@ export default function ProductCard({ product }: ProductCardProps) {
       </div>
 
       {/* Content */}
-
       <div className="p-5">
 
         <Link href={`/product/${product.id}`}>
@@ -112,17 +118,18 @@ export default function ProductCard({ product }: ProductCardProps) {
           )}
 
         </div>
+
         <div className="mt-4 flex items-center justify-between text-sm">
-  {product.stock > 0 ? (
-    <span className="rounded-full bg-green-100 px-3 py-1 font-medium text-green-700">
-      ✓ In Stock
-    </span>
-  ) : (
-    <span className="rounded-full bg-red-100 px-3 py-1 font-medium text-red-600">
-      Out of Stock
-    </span>
-  )}
-</div>
+          {product.stock > 0 ? (
+            <span className="rounded-full bg-green-100 px-3 py-1 font-medium text-green-700">
+              ✓ In Stock
+            </span>
+          ) : (
+            <span className="rounded-full bg-red-100 px-3 py-1 font-medium text-red-600">
+              Out of Stock
+            </span>
+          )}
+        </div>
 
         <button
           disabled={product.stock <= 0}
@@ -132,15 +139,15 @@ export default function ProductCard({ product }: ProductCardProps) {
               quantity: 1,
             })
           }
-          className={`mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-3 font-semibold text-white transition ${
+          className={`mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-3 font-semibold text-white transition-all duration-300 ${
             product.stock > 0
-              ? "bg-pink-600 hover:bg-pink-700"
+              ? "bg-pink-600 hover:-translate-y-1 hover:bg-pink-700 hover:shadow-xl"
               : "cursor-not-allowed bg-gray-400"
           }`}
         >
           <ShoppingCart size={20} />
           {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
-      </button>
+        </button>
 
       </div>
 

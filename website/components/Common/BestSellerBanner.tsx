@@ -33,7 +33,7 @@ export default function BestSellerBanner() {
 
               <Link
                 href="/category/cosmetics"
-                className="mt-8 inline-block rounded-full bg-white px-8 py-4 font-semibold text-pink-600 transition hover:scale-105"
+                className="inline-block mt-6 rounded-full bg-black px-8 py-3 font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:bg-gray-800 hover:shadow-xl"
               >
                 Shop Best Sellers
               </Link>

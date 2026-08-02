@@ -42,7 +42,7 @@ export default function Hero() {
 
             <Link
               href="/category/cosmetics"
-              className="rounded-full bg-black text-white px-8 py-3 font-semibold hover:bg-gray-800 transition"
+             className="rounded-full bg-black px-8 py-3 font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:bg-gray-800 hover:shadow-xl"
             >
               Shop Beauty
             </Link>
@@ -50,7 +50,7 @@ export default function Hero() {
 
             <Link
               href="/category/fashion"
-              className="rounded-full border border-black px-8 py-3 font-semibold hover:bg-black hover:text-white transition"
+              className="rounded-full border border-black px-8 py-3 font-semibold transition-all duration-300 hover:-translate-y-1 hover:bg-black hover:text-white hover:shadow-xl"
             >
               Explore Fashion
             </Link>
