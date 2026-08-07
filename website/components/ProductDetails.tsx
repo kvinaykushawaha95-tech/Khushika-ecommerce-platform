@@ -3,147 +3,135 @@
 import { useState } from "react";
 import Image from "next/image";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import toast from "react-hot-toast";
 
 import { Product } from "@/types/product";
 import { useCart } from "@/context/CartContext";
-import toast from "react-hot-toast";
-
 
 interface Props {
   product: Product;
 }
 
 export default function ProductDetails({ product }: Props) {
-
   const { addToCart } = useCart();
 
   const [quantity, setQuantity] = useState(1);
+
   const [selectedImage, setSelectedImage] = useState(
-  product.images?.[0] || product.image
-);
-const [showLightbox, setShowLightbox] = useState(false);
-const images = product.images?.length
-  ? product.images
-  : [product.image];
+    product.images?.[0] || product.image
+  );
 
-const currentIndex = images.findIndex(
-  (img) => img === selectedImage
-);
+  const [showLightbox, setShowLightbox] = useState(false);
 
+  const images = product.images?.length
+    ? product.images
+    : [product.image];
+
+  const currentIndex = images.findIndex(
+    (img) => img === selectedImage
+  );
 
   const discount = Math.round(
     ((product.originalPrice - product.price) /
       product.originalPrice) *
       100
   );
+
   function nextImage() {
-  const next = (currentIndex + 1) % images.length;
-  setSelectedImage(images[next]);
-}
+    const next = (currentIndex + 1) % images.length;
+    setSelectedImage(images[next]);
+  }
 
-function prevImage() {
-  const prev =
-    (currentIndex - 1 + images.length) % images.length;
-  setSelectedImage(images[prev]);
-}
+  function prevImage() {
+    const prev =
+      (currentIndex - 1 + images.length) % images.length;
 
+    setSelectedImage(images[prev]);
+  }
 
   function handleAddToCart() {
-  if (product.stock === 0) {
-    toast.error("This product is out of stock.");
-    return;
+    if (product.stock === 0) {
+      toast.error("This product is out of stock.");
+      return;
+    }
+
+    if (quantity > product.stock) {
+      toast.error(`Only ${product.stock} item(s) available.`);
+      return;
+    }
+
+    addToCart({
+      ...product,
+      quantity,
+    });
+
+    toast.success("Added to cart successfully!");
   }
-
-  if (quantity > product.stock) {
-    toast.error(`Only ${product.stock} item(s) available.`);
-    return;
-  }
-
-  addToCart({
-    ...product,
-    quantity,
-  });
-
-  toast.success("Added to cart successfully!");
-}
-
 
   return (
+    <div className="grid gap-12 lg:grid-cols-2">
 
-    <div className="grid lg:grid-cols-2 gap-12">
+      {/* ================= PRODUCT GALLERY ================= */}
 
+      <div className="rounded-3xl border border-gray-100 bg-white p-4 shadow-xl sm:p-6 lg:p-8">
 
-{/* Product Gallery */}
+        {/* Main Product Image */}
 
-<div>
-
-  <div className="sticky top-24">
-
-    <div className="rounded-3xl border border-gray-100 bg-white p-4 shadow-xl sm:p-6 lg:p-8">
-
-    <div
-      onClick={() => setShowLightbox(true)}
-      className="cursor-zoom-in"
-    >
-      <Image
-        src={selectedImage}
-        alt={product.name}
-        width={700}
-        height={700}
-        className="h-[550px] w-full object-contain transition-transform duration-500 hover:scale-110"
-      />
-    </div>
-
-</div>
-
-
-    {/* Thumbnails */}
-
-    <div className="mt-5 flex gap-4 overflow-x-auto">
-
-      {(product.images || [product.image]).map(
-        (img, index) => (
-
-        <div
-          key={index}
-          onClick={() => setSelectedImage(img)}
-          className={`cursor-pointer rounded-xl border p-2 transition ${
-            selectedImage === img
-              ? "border-pink-600 shadow-md"
-              : "border-gray-200"
-          }`}
-        >
-
-          <Image
-            src={img}
-            alt={product.name}
-            width={80}
-            height={80}
-            className="h-20 w-20 rounded-lg object-cover"
-          />
-
+        <div className="cursor-zoom-in">
+          <button
+            type="button"
+            onClick={() => setShowLightbox(true)}
+            className="group block w-full cursor-zoom-in"
+            aria-label="View product image"
+          >
+            <Image
+              src={selectedImage}
+              alt={product.name}
+              width={700}
+              height={700}
+              className="h-[550px] w-full object-contain transition duration-500 group-hover:scale-105"
+            />
+          </button>
         </div>
 
-      ))}
+        {/* Thumbnails */}
 
-    </div>
+        <div className="mt-5 flex gap-4 overflow-x-auto pb-2">
+          {images.map((img, index) => (
+            <button
+              key={index}
+              type="button"
+              onClick={() => setSelectedImage(img)}
+              className={`shrink-0 rounded-xl border p-2 transition ${
+                selectedImage === img
+                  ? "border-pink-600 shadow-md"
+                  : "border-gray-200 hover:border-pink-300"
+              }`}
+              aria-label={`View product image ${index + 1}`}
+            >
+              <Image
+                src={img}
+                alt={`${product.name} ${index + 1}`}
+                width={80}
+                height={80}
+                className="h-20 w-20 rounded-lg object-cover"
+              />
+            </button>
+          ))}
+        </div>
+      </div>
 
-  </div>
-
-</div>
-
-
-
-      {/* Details */}
+      {/* ================= PRODUCT DETAILS ================= */}
 
       <div>
 
+        {/* Product Name */}
 
-        <h1 className="text-3xl md:text-5xl font-extrabold leading-tight text-gray-900">
+        <h1 className="text-3xl font-extrabold leading-tight text-gray-900 md:text-5xl">
           {product.name}
         </h1>
 
-
+        {/* Rating */}
 
         <div className="mt-5 flex items-center gap-3">
           <div className="rounded-full bg-yellow-100 px-3 py-1 font-semibold text-yellow-700">
@@ -155,68 +143,60 @@ function prevImage() {
           </span>
         </div>
 
+        {/* Price */}
 
-
-
-        <div className="mt-8 flex items-center gap-4">
-
+        <div className="mt-8 flex flex-wrap items-center gap-4">
           <span className="text-4xl font-bold text-pink-600">
             ₹{product.price}
           </span>
 
-
-          <span className="text-2xl line-through text-gray-400">
+          <span className="text-2xl text-gray-400 line-through">
             ₹{product.originalPrice}
           </span>
 
-
-          <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full">
+          <span className="rounded-full bg-green-100 px-3 py-1 text-green-700">
             {discount}% OFF
           </span>
-
-
         </div>
 
-
-
+        {/* Description */}
 
         <p className="mt-6 text-gray-600">
           Premium quality beauty product designed for everyday use.
         </p>
+
+        {/* Stock Status */}
+
         <div className="mt-4">
           {product.stock > 10 && (
-            <span className="text-green-600 font-semibold">
+            <span className="font-semibold text-green-600">
               🟢 In Stock ({product.stock} available)
             </span>
           )}
 
           {product.stock > 0 && product.stock <= 10 && (
-            <span className="text-yellow-600 font-semibold">
+            <span className="font-semibold text-yellow-600">
               🟡 Only {product.stock} left
             </span>
           )}
 
           {product.stock === 0 && (
-            <span className="text-red-600 font-bold text-lg">
+            <span className="text-lg font-bold text-red-600">
               🔴 Out of Stock
             </span>
           )}
         </div>
 
-
-
-        {/* Quantity */}
+        {/* ================= QUANTITY ================= */}
 
         <div className="mt-10">
-
-
-          <h3 className="font-semibold mb-3">
+          <h3 className="mb-3 font-semibold">
             Quantity
           </h3>
 
-
           <div className="flex items-center gap-4">
 
+            {/* Decrease */}
 
             <button
               type="button"
@@ -225,42 +205,42 @@ function prevImage() {
                   prev > 1 ? prev - 1 : 1
                 )
               }
-              className="flex h-11 w-11 items-center justify-center rounded-full border bg-white text-xl shadow hover:bg-pink-50"
+              className="flex h-11 w-11 items-center justify-center rounded-full border bg-white text-xl shadow transition hover:bg-pink-50"
             >
               -
             </button>
 
-
+            {/* Quantity */}
 
             <span className="text-xl font-bold">
               {quantity}
             </span>
 
-
+            {/* Increase */}
 
             <button
               type="button"
               onClick={() =>
-                setQuantity((prev) => prev + 1)
+                setQuantity((prev) =>
+                  prev < product.stock ? prev + 1 : prev
+                )
               }
-              className="w-10 h-10 rounded-full bg-gray-200"
+              disabled={product.stock === 0}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 transition hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
             >
               +
             </button>
-
-
           </div>
-
-
         </div>
 
-
-
-
-        {/* Buttons */}
+        {/* ================= ACTION BUTTONS ================= */}
 
         <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+
+          {/* Add To Cart */}
+
           <button
+            type="button"
             onClick={handleAddToCart}
             disabled={product.stock === 0}
             className={`flex-1 rounded-2xl py-4 text-lg font-semibold text-white transition-all duration-300 ${
@@ -269,75 +249,131 @@ function prevImage() {
                 : "bg-pink-600 hover:-translate-y-1 hover:bg-pink-700 hover:shadow-xl"
             }`}
           >
-            {product.stock === 0 ? "Out of Stock" : "Add To Cart"}
+            {product.stock === 0
+              ? "Out of Stock"
+              : "Add To Cart"}
           </button>
 
-          <button className="flex-1 rounded-2xl bg-black py-4 text-lg font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:bg-gray-800 hover:shadow-xl">
+          {/* Buy Now */}
+
+          <button
+            type="button"
+            disabled={product.stock === 0}
+            className="flex-1 rounded-2xl bg-black py-4 text-lg font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:bg-gray-800 hover:shadow-xl disabled:cursor-not-allowed disabled:bg-gray-400"
+          >
             Buy Now
           </button>
         </div>
 
+        {/* ================= FEATURES ================= */}
+
         <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div className="rounded-2xl border p-4 text-center">
-            <div className="text-2xl">🚚</div>
-            <p className="mt-2 text-sm font-medium">Free Shipping</p>
-          </div>
+
+          {/* Free Shipping */}
 
           <div className="rounded-2xl border p-4 text-center">
-            <div className="text-2xl">🔒</div>
-            <p className="mt-2 text-sm font-medium">Secure Payment</p>
+            <div className="text-2xl">
+              🚚
+            </div>
+
+            <p className="mt-2 text-sm font-medium">
+              Free Shipping
+            </p>
           </div>
 
+          {/* Secure Payment */}
+
           <div className="rounded-2xl border p-4 text-center">
-            <div className="text-2xl">↩️</div>
-            <p className="mt-2 text-sm font-medium">Easy Returns</p>
+            <div className="text-2xl">
+              🔒
+            </div>
+
+            <p className="mt-2 text-sm font-medium">
+              Secure Payment
+            </p>
+          </div>
+
+          {/* Easy Returns */}
+
+          <div className="rounded-2xl border p-4 text-center">
+            <div className="text-2xl">
+              ↩️
+            </div>
+
+            <p className="mt-2 text-sm font-medium">
+              Easy Returns
+            </p>
           </div>
         </div>
       </div>
 
+      {/* ================= FULLSCREEN LIGHTBOX ================= */}
+
       {showLightbox && (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90">
-
-        {/* Close */}
-        <button
+        <div
+          className="fixed inset-0 z-[999] flex items-center justify-center bg-black/90 p-4"
           onClick={() => setShowLightbox(false)}
-          className="absolute right-6 top-6 rounded-full bg-white p-3 shadow-lg"
         >
-          <X size={28} />
-        </button>
 
-        {/* Previous */}
-        {images.length > 1 && (
+          {/* Close Button */}
+
           <button
-            onClick={prevImage}
-            className="absolute left-6 rounded-full bg-white p-3 shadow-lg"
+            type="button"
+            onClick={() => setShowLightbox(false)}
+            className="absolute right-5 top-5 z-50 rounded-full bg-white/90 p-3 text-gray-900 shadow-lg transition hover:bg-white"
+            aria-label="Close image viewer"
           >
-            <ChevronLeft size={30} />
+            <X size={28} />
           </button>
-        )}
 
-        {/* Image */}
-        <Image
-          src={selectedImage}
-          alt={product.name}
-          width={1200}
-          height={1200}
-          className="max-h-[90vh] w-auto object-contain"
-        />
+          {/* Previous Button */}
 
-        {/* Next */}
-        {images.length > 1 && (
-          <button
-            onClick={nextImage}
-            className="absolute right-6 rounded-full bg-white p-3 shadow-lg"
+          {images.length > 1 && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                prevImage();
+              }}
+              className="absolute left-5 z-50 rounded-full bg-white/90 p-3 text-gray-900 shadow-lg transition hover:bg-white md:left-8"
+              aria-label="Previous image"
+            >
+              <ChevronLeft size={30} />
+            </button>
+          )}
+
+          {/* Image */}
+
+          <div
+            className="relative flex h-[80vh] w-full max-w-5xl items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
           >
-            <ChevronRight size={30} />
-          </button>
-        )}
+            <Image
+              src={selectedImage}
+              alt={product.name}
+              fill
+              sizes="100vw"
+              className="object-contain"
+            />
+          </div>
 
-      </div>
+          {/* Next Button */}
+
+          {images.length > 1 && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                nextImage();
+              }}
+              className="absolute right-5 z-50 rounded-full bg-white/90 p-3 text-gray-900 shadow-lg transition hover:bg-white md:right-8"
+              aria-label="Next image"
+            >
+              <ChevronRight size={30} />
+            </button>
+          )}
+        </div>
       )}
-
     </div>
   );
 }
