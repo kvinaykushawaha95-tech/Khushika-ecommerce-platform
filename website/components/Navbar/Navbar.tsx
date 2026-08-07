@@ -200,6 +200,73 @@ export default function Navbar() {
 
           </div>
         </nav>
+        <nav className="hidden lg:block border-t bg-white">
+            ...
+        </nav>
+        {mobileOpen && (
+  <div className="lg:hidden border-t bg-white shadow-lg">
+
+    <div className="flex flex-col p-5 space-y-4">
+
+      <Link href="/" onClick={() => setMobileOpen(false)}>
+        🏠 Home
+      </Link>
+
+      <Link
+        href="/category/cosmetics"
+        onClick={() => setMobileOpen(false)}
+      >
+        💄 Cosmetics
+      </Link>
+
+      <Link
+        href="/category/clothes"
+        onClick={() => setMobileOpen(false)}
+      >
+        👗 Clothes
+      </Link>
+
+      <Link
+        href="/offers"
+        onClick={() => setMobileOpen(false)}
+      >
+        🎁 Offers
+      </Link>
+
+      <Link
+        href="/contact"
+        onClick={() => setMobileOpen(false)}
+      >
+        📞 Contact
+      </Link>
+
+      <hr />
+
+      <Link
+        href="/wishlist"
+        onClick={() => setMobileOpen(false)}
+      >
+        ❤️ Wishlist ({totalWishlist})
+      </Link>
+
+      <Link
+        href="/cart"
+        onClick={() => setMobileOpen(false)}
+      >
+        🛒 Cart ({totalItems})
+      </Link>
+
+      <Link
+        href="/profile"
+        onClick={() => setMobileOpen(false)}
+      >
+        👤 Profile
+      </Link>
+
+    </div>
+
+  </div>
+)}
 
       </header>
     </>

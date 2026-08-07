@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
+
 import { Product } from "@/types/product";
 import { useCart } from "@/context/CartContext";
 import toast from "react-hot-toast";
@@ -19,6 +21,14 @@ export default function ProductDetails({ product }: Props) {
   const [selectedImage, setSelectedImage] = useState(
   product.images?.[0] || product.image
 );
+const [showLightbox, setShowLightbox] = useState(false);
+const images = product.images?.length
+  ? product.images
+  : [product.image];
+
+const currentIndex = images.findIndex(
+  (img) => img === selectedImage
+);
 
 
   const discount = Math.round(
@@ -26,6 +36,16 @@ export default function ProductDetails({ product }: Props) {
       product.originalPrice) *
       100
   );
+  function nextImage() {
+  const next = (currentIndex + 1) % images.length;
+  setSelectedImage(images[next]);
+}
+
+function prevImage() {
+  const prev =
+    (currentIndex - 1 + images.length) % images.length;
+  setSelectedImage(images[prev]);
+}
 
 
   function handleAddToCart() {
@@ -59,17 +79,22 @@ export default function ProductDetails({ product }: Props) {
 
   <div className="sticky top-24">
 
-    <div className="rounded-3xl border border-gray-100 bg-white p-8 shadow-xl">
+    <div className="rounded-3xl border border-gray-100 bg-white p-4 shadow-xl sm:p-6 lg:p-8">
 
+    <div
+      onClick={() => setShowLightbox(true)}
+      className="cursor-zoom-in"
+    >
       <Image
         src={selectedImage}
         alt={product.name}
         width={700}
         height={700}
-        className="h-[550px] w-full object-contain transition duration-500 hover:scale-110"
+        className="h-[550px] w-full object-contain transition-transform duration-500 hover:scale-110"
       />
-
     </div>
+
+</div>
 
 
     {/* Thumbnails */}
@@ -234,62 +259,85 @@ export default function ProductDetails({ product }: Props) {
 
         {/* Buttons */}
 
-        <div className="flex gap-4 mt-10">
-
-
+        <div className="mt-10 flex flex-col gap-4 sm:flex-row">
           <button
-              onClick={handleAddToCart}
-              disabled={product.stock === 0}
-              className={`flex-1 rounded-2xl py-4 text-lg font-semibold text-white transition-all duration-300 ${
-                  product.stock === 0
-                    ? "cursor-not-allowed bg-gray-400"
-                    : "bg-pink-600 hover:-translate-y-1 hover:bg-pink-700 hover:shadow-xl"
-                }`}
-                            >
-              {product.stock === 0 ? "Out of Stock" : "Add To Cart"}
-          </button>
-
-
-
-          <button
-            className="flex-1 rounded-2xl bg-black py-4 text-lg font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:bg-gray-800 hover:shadow-xl"
+            onClick={handleAddToCart}
+            disabled={product.stock === 0}
+            className={`flex-1 rounded-2xl py-4 text-lg font-semibold text-white transition-all duration-300 ${
+              product.stock === 0
+                ? "cursor-not-allowed bg-gray-400"
+                : "bg-pink-600 hover:-translate-y-1 hover:bg-pink-700 hover:shadow-xl"
+            }`}
           >
-            Buy Now
-
+            {product.stock === 0 ? "Out of Stock" : "Add To Cart"}
           </button>
-          <div className="mt-10 grid grid-cols-3 gap-4">
 
-            <div className="rounded-2xl border p-4 text-center">
-              <div className="text-2xl">🚚</div>
-              <p className="mt-2 text-sm font-medium">
-                Free Shipping
-              </p>
-            </div>
-
-            <div className="rounded-2xl border p-4 text-center">
-              <div className="text-2xl">🔒</div>
-              <p className="mt-2 text-sm font-medium">
-                Secure Payment
-              </p>
-            </div>
-
-            <div className="rounded-2xl border p-4 text-center">
-              <div className="text-2xl">↩️</div>
-              <p className="mt-2 text-sm font-medium">
-                Easy Returns
-              </p>
-            </div>
-
-          </div>
-
-
+          <button className="flex-1 rounded-2xl bg-black py-4 text-lg font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:bg-gray-800 hover:shadow-xl">
+            Buy Now
+          </button>
         </div>
 
+        <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="rounded-2xl border p-4 text-center">
+            <div className="text-2xl">🚚</div>
+            <p className="mt-2 text-sm font-medium">Free Shipping</p>
+          </div>
 
+          <div className="rounded-2xl border p-4 text-center">
+            <div className="text-2xl">🔒</div>
+            <p className="mt-2 text-sm font-medium">Secure Payment</p>
+          </div>
+
+          <div className="rounded-2xl border p-4 text-center">
+            <div className="text-2xl">↩️</div>
+            <p className="mt-2 text-sm font-medium">Easy Returns</p>
+          </div>
+        </div>
       </div>
 
+      {showLightbox && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90">
+
+        {/* Close */}
+        <button
+          onClick={() => setShowLightbox(false)}
+          className="absolute right-6 top-6 rounded-full bg-white p-3 shadow-lg"
+        >
+          <X size={28} />
+        </button>
+
+        {/* Previous */}
+        {images.length > 1 && (
+          <button
+            onClick={prevImage}
+            className="absolute left-6 rounded-full bg-white p-3 shadow-lg"
+          >
+            <ChevronLeft size={30} />
+          </button>
+        )}
+
+        {/* Image */}
+        <Image
+          src={selectedImage}
+          alt={product.name}
+          width={1200}
+          height={1200}
+          className="max-h-[90vh] w-auto object-contain"
+        />
+
+        {/* Next */}
+        {images.length > 1 && (
+          <button
+            onClick={nextImage}
+            className="absolute right-6 rounded-full bg-white p-3 shadow-lg"
+          >
+            <ChevronRight size={30} />
+          </button>
+        )}
+
+      </div>
+      )}
 
     </div>
-
   );
 }
