@@ -10,7 +10,7 @@ const slides = [
     title: "Glow Like Never Before",
     subtitle: "Luxury Beauty Collection",
     description: "Discover premium skincare, makeup and fashion.",
-    image: "/banners/banner1.jpg",
+    image: "/banners/banner1.png",
     button: "Shop Now",
   },
   {
@@ -18,7 +18,7 @@ const slides = [
     title: "Flat 50% OFF",
     subtitle: "Fashion Sale",
     description: "Trendy outfits at amazing prices.",
-    image: "/banners/banner2.jpg",
+    image: "/banners/banner2.png",
     button: "Explore",
   },
   {
@@ -26,7 +26,7 @@ const slides = [
     title: "New Arrivals",
     subtitle: "Beauty Essentials",
     description: "Fresh products added every week.",
-    image: "/banners/banner3.jpg",
+    image: "/banners/banner3.png",
     button: "View Collection",
   },
 ];
@@ -50,7 +50,7 @@ export default function HeroSlider() {
 
   return (
     <section className="relative mx-auto mt-6 max-w-7xl overflow-hidden rounded-3xl">
-      <div className="relative h-[550px]">
+      <div className="relative h-[700px]">
 
         <Image
           src={slides[current].image}

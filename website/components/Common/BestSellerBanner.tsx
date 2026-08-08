@@ -43,6 +43,7 @@ export default function BestSellerBanner() {
             {/* Right */}
 
             <div className="flex justify-center">
+              
 
               <Image
                 src="/banners/bestseller.png"

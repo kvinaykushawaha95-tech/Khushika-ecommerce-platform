@@ -111,11 +111,10 @@ export default function Hero() {
 
           <Image
             src="/hero.png"
-            alt="Khushika Beauty Fashion"
+            alt="Khushika Beauty & Fashion"
             width={550}
-            height={550}
-            className="relative z-10 object-contain"
-            priority
+            height={700}
+            className="w-full h-auto"
           />
 
 

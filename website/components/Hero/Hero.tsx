@@ -102,7 +102,7 @@ export default function Hero() {
             src="/banners/banner.png"
             alt="Khushika Beauty & Fashion"
             width={650}
-            height={650}
+            height={600}
             priority
             className="rounded-3xl shadow-2xl"
           />
