@@ -49,7 +49,7 @@ export default function Hero() {
 
 
             <Link
-              href="/category/fashion"
+              href="/category/clothes"
               className="rounded-full border border-black px-8 py-3 font-semibold transition-all duration-300 hover:-translate-y-1 hover:bg-black hover:text-white hover:shadow-xl"
             >
               Explore Fashion
@@ -114,7 +114,7 @@ export default function Hero() {
             alt="Khushika Beauty & Fashion"
             width={550}
             height={700}
-            className="w-full h-auto"
+            className="w-full h-auto rounded-[28px]"
           />
 
 
